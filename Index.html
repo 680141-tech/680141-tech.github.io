@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GreenNest — ร้านขายต้นไม้</title>
+  <meta name="description" content="ร้านขายต้นไม้กระถาง ต้นไม้ฟอกอากาศ ไม้ด่าง ไม้มงคล ส่งทั่วไทย" />
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --brand:#22c55e;
+      --brand-2:#16a34a;
+      --line:#e5e7eb;
+      --warn:#ef4444;
+      --focus: 0 0 0 3px rgba(34,197,94,.35);
+      --radius:14px;
+      --radius-sm:10px;
+      --shadow: 0 10px 30px rgba(2,6,23,.08);
+      --shadow-sm: 0 6px 16px rgba(2,6,23,.06);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    button{font:inherit}
+    /* header */
+    .topbar{
+      position:sticky;top:0;z-index:20;background:rgba(255,255,255,.75);
+      backdrop-filter:saturate(180%) blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:1200px;margin:auto;padding:16px}
+    .row{display:flex;align-items:center;gap:14px}
+    .grow{flex:1}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+    .logo{
+      width:36px;height:36px;border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #34d399, #10b981 55%, #0ea5e9 56%, #22c55e 85%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.7), var(--shadow-sm);
+    }
+    .nav{display:flex;gap:14px;color:var(--muted);flex-wrap:wrap}
+    .pill{
+      padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff
+    }
+    .cart-btn{
+      position:relative;border:none;border-radius:999px;padding:10px 14px;
+      background:var(--brand);color:white;font-weight:700;cursor:pointer;box-shadow:var(--shadow-sm)
+    }
+    .cart-btn:hover{background:var(--brand-2)}
+    .cart-count{
+      position:absolute;right:-6px;top:-6px;min-width:22px;height:22px;border-radius:50%;
+      background:#111827;color:#fff;font-size:12px;display:grid;place-items:center;border:2px solid #fff
+    }
+
+    /* hero */
+    .hero{
+      max-width:1200px;margin:18px auto 6px;display:grid;grid-template-columns:1.1fr .9fr;gap:18px
+    }
+    .hero-card{
+      background:linear-gradient(135deg,#ecfdf5,#e0f2fe);
+      border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)
+    }
+    .hero h1{margin:0 0 8px;font-size:34px;line-height:1.2}
+    .hero p{margin:0 0 16px;color:var(--muted)}
+    .hero .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .hero .primary{background:#111827;color:#fff}
+    .hero .secondary{background:#fff;border:1px solid var(--line)}
+    .hero img.mock{
+      width:100%;height:100%;object-fit:cover;border-radius:var(--radius);
+      border:1px solid var(--line);box-shadow:var(--shadow-sm)
+    }
+
+    /* filters */
+    .filters{
+      max-width:1200px;margin:8px auto 0;padding:10px 0 0 0;
+      display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center
+    }
+    .search{
+      display:flex;align-items:center;background:#fff;border:1px solid var(--line);
+      border-radius:999px;padding:8px 12px;gap:10px
+    }
+    .search input{
+      border:none;outline:none;width:100%;background:transparent
+    }
+    select{
+      padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:#fff
+    }
+
+    /* grid */
+    .grid{
+      max-width:1200px;margin:14px auto;display:grid;gap:14px;
+      grid-template-columns:repeat(4,minmax(0,1fr))
+    }
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-sm)
+    }
+    .thumb{
+      aspect-ratio: 4/3; background:linear-gradient(135deg,#d1fae5,#a7f3d0);
+      display:grid;place-items:center;border-bottom:1px solid var(--line)
+    }
+    .thumb svg{width:54%;opacity:.9}
+    .card .body{padding:14px;display:flex;flex-direction:column;gap:6px}
+    .title{font-weight:700}
+    .price{font-weight:800}
+    .meta{color:var(--muted);font-size:14px}
+    .qty-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+    .qty-row button{
+      border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer
+    }
+    .add{
+      margin-top:8px;border:none;border-radius:12px;padding:10px 12px;cursor:pointer;
+      background:var(--brand);color:white;font-weight:700
+    }
+    .add:hover{background:var(--brand-2)}
+
+    /* cart drawer */
+    .drawer{
+      position:fixed;inset:0;pointer-events:none;z-index:50
+    }
+    .backdrop{
+      position:absolute;inset:0;background:rgba(2,6,23,.48);opacity:0;transition:.25s
+    }
+    .panel{
+      position:absolute;top:0;right:-420px;width:380px;max-width:90vw;height:100%;
+      background:#fff;border-left:1px solid var(--line);box-shadow:var(--shadow);transition:.25s;
+      display:flex;flex-direction:column
+    }
+    .drawer.open{pointer-events:auto}
+    .drawer.open .backdrop{opacity:1}
+    .drawer.open .panel{right:0}
+    .panel header, .panel footer{padding:16px;border-bottom:1px solid var(--line)}
+    .panel header{display:flex;align-items:center;justify-content:space-between}
+    .panel main{padding:14px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+    .cart-item{
+      display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center
+    }
+    .cart-thumb{
+      width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);
+      border:1px solid var(--line);display:grid;place-items:center
+    }
+    .cart-thumb svg{width:60%}
+    .cart-actions{display:flex;gap:6px;align-items:center}
+    .remove{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer}
+    .empty{color:var(--muted);text-align:center;padding:30px 6px}
+    .summary{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0}
+    .checkout{
+      display:flex;flex-direction:column;gap:8px
+    }
+    .checkout input{
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line)
+    }
+    .pay{border:none;border-radius:12px;padding:12px;cursor:pointer;background:#111827;color:#fff;font-weight:800}
+
+    /* footer */
+    footer.site{max-width:1200px;margin:20px auto 40px;color:var(--muted)}
+    .badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px}
+
+    /* responsive */
+    @media (max-width:1000px){ .grid{grid-template-columns:repeat(3,1fr)} .hero{grid-template-columns:1fr} }
+    @media (max-width:680px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .nav{display:none}
+      .hero h1{font-size:28px}
+    }
+    @media (max-width:430px){ .grid{grid-template-columns:1fr} }
+    /* focus */
+    :focus-visible{outline:none;box-shadow:var(--focus)}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap row">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <span>GreenNest</span>
+      </div>
+      <nav class="nav">
+        <a href="#" class="pill">หน้าแรก</a>
+        <a href="#catalog" class="pill">สินค้า</a>
+        <a href="#contact" class="pill">ติดต่อ</a>
+      </nav>
+      <div class="grow"></div>
+      <button class="cart-btn" id="openCart" aria-label="เปิดตะกร้าสินค้า">
+        ตะกร้า <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-card">
+      <h1>ปลูกความเขียวให้บ้านสดชื่น 🌿</h1>
+      <p>รวมต้นไม้ฟอกอากาศ ไม้มงคล และไม้ด่าง คัดสวย ส่งด่วนทั่วไทย มีบริการดูแลหลังการขาย</p>
+      <div class="actions">
+        <a class="pill hero primary" href="#catalog">ดูสินค้ายอดนิยม</a>
+        <a class="pill hero secondary" href="#contact">ขอคำแนะนำเลือกต้นไม้</a>
+      </div>
+    </div>
+    <img class="mock" alt="ภาพตัวอย่างสวนในห้องนั่งเล่น" src="data:image/svg+xml;utf8,
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'>
+      <defs><linearGradient id='g' x1='0' x2='1'>
+      <stop offset='0' stop-color='%23d1fae5'/><stop offset='1' stop-color='%23a7f3d0'/></linearGradient></defs>
+      <rect width='1200' height='800' fill='url(%23g)'/>
+      <g fill='%23065f46' opacity='.8'>
+        <circle cx='150' cy='680' r='120'/><rect x='120' y='620' width='60' height='60' rx='10'/>
+        <circle cx='550' cy='640' r='140'/><rect x='520' y='600' width='60' height='60' rx='10'/>
+        <circle cx='970' cy='660' r='120'/><rect x='940' y='620' width='60' height='60' rx='10'/>
+      </g>
+      <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='44' fill='%2306532b'>
+        GreenNest — Fresh Plants
+      </text></svg>"/>
+  </section>
+
+  <!-- Filters -->
+  <section class="filters" id="catalog">
+    <label class="search" aria-label="ค้นหาสินค้า">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" id="q" placeholder="ค้นหา: ชื่อ, ประเภท, คุณสมบัติ…" />
+    </label>
+    <select id="category">
+      <option value="">ทุกประเภท</option>
+      <option value="ฟอกอากาศ">ฟอกอากาศ</option>
+      <option value="ไม้มงคล">ไม้มงคล</option>
+      <option value="ไม้ด่าง">ไม้ด่าง</option>
+      <option value="แคคตัส">แคคตัส</option>
+      <option value="ไม้ใบ">ไม้ใบ</option>
+    </select>
+    <select id="sort">
+      <option value="popular">เรียง: ยอดนิยม</option>
+      <option value="price-asc">ราคาน้อย→มาก</option>
+      <option value="price-desc">ราคามาก→น้อย</option>
+      <option value="name-asc">ชื่อ A→Z</option>
+    </select>
+  </section>
+
+  <!-- Product Grid -->
+  <section class="grid" id="grid" aria-live="polite"></section>
+
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="backdrop" id="backdrop" tabindex="-1" aria-label="ปิดตะกร้า"></div>
+    <div class="panel" role="dialog" aria-labelledby="cartTitle">
+      <header>
+        <strong id="cartTitle">ตะกร้าสินค้า</strong>
+        <button class="remove" id="closeCart" aria-label="ปิดตะกร้า">ปิด</button>
+      </header>
+      <main id="cartList"></main>
+      <footer>
+        <div class="summary">
+          <div>ยอดรวม</div>
+          <strong id="grandTotal">฿0.00</strong>
+          <div>จัดส่ง</div>
+          <span id="shipping">คำนวณที่เช็คเอาต์</span>
+        </div>
+        <div class="checkout">
+          <input id="name" placeholder="ชื่อ - นามสกุล" />
+          <input id="phone" placeholder="เบอร์โทร" />
+          <input id="address" placeholder="ที่อยู่จัดส่ง" />
+          <button class="pay" id="payBtn">สั่งซื้อ (ตัวอย่าง)</button>
+          <small class="meta">* เดโม: กดสั่งซื้อเพื่อจำลองการชำระเงิน (ยังไม่ตัดเงินจริง)</small>
+        </div>
+      </footer>
+    </div>
+  </aside>
+
+  <footer class="site" id="contact">
+    <div class="badges">
+      <span class="badge">ส่งทั่วไทย</span>
+      <span class="badge">แพ็กกันกระแทก</span>
+      <span class="badge">รับประกัน 7 วัน</span>
+      <span class="badge">ให้คำแนะนำดูแลฟรี</span>
+    </div>
+    <p>© <span id="year"></span> GreenNest. ทำด้วย ♥ เพื่อคนรักต้นไม้</p>
+  </footer>
+
+  <script>
+  // ---------- Utilities ----------
+  const THB = new Intl.NumberFormat('th-TH',{style:'currency',currency:'THB'});
+  const $ = (q,root=document)=>root.querySelector(q);
+  const $$ = (q,root=document)=>[...root.querySelectorAll(q)];
+  const storage = {
+    get(key,def){ try{ return JSON.parse(localStorage.getItem(key)) ?? def }catch{ return def } },
+    set(key,val){ localStorage.setItem(key, JSON.stringify(val)) }
+  };
+  const debounce = (fn,ms=250)=>{ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args),ms); } };
+
+  // ---------- Sample Catalog ----------
+  const PRODUCTS = [
+    {id:'p1',  name:'มอนสเตอร่า',   price:690,  tag:'ฟอกอากาศ',    popular:98,  stock:12,  note:'เลี้ยงง่ายในอาคาร'},
+    {id:'p2',  name:'ยางอินเดีย',   price:520,  tag:'ไม้ใบ',        popular:85,  stock:18,  note:'ทนแล้ง แสงรำไร'},
+    {id:'p3',  name:'กวักมรกต',     price:350,  tag:'ไม้มงคล',      popular:92,  stock:20,  note:'เสริมโชคลาภ'},
+    {id:'p4',  name:'ลิ้นมังกร',    price:220,  tag:'ฟอกอากาศ',    popular:80,  stock:40,  note:'ทนถึก เหมาะมือใหม่'},
+    {id:'p5',  name:'ศุภโชค',       price:450,  tag:'ไม้มงคล',      popular:76,  stock:10,  note:'ลายใบสวย'},
+    {id:'p6',  name:'พลูฉลุ',       price:320,  tag:'ไม้ใบ',        popular:60,  stock:15,  note:'เลื้อยแต่งผนังได้'},
+    {id:'p7',  name:'แคคตัส Astrophytum', price:180, tag:'แคคตัส', popular:70,  stock:50,  note:'ชอบแดดจัด'},
+    {id:'p8',  name:'บอนสีด่าง',    price:1250, tag:'ไม้ด่าง',      popular:88,  stock:5,   note:'หายากลายสวย'},
+    {id:'p9',  name:'ฟิโลเดนดรอนเขียว', price:390, tag:'ไม้ใบ',   popular:74,  stock:22,  note:'โตไว ใบสวย'},
+    {id:'p10', name:'เศรษฐีเรือนใน', price:160, tag:'ฟอกอากาศ',   popular:65,  stock:60,  note:'วางโต๊ะทำงาน'},
+    {id:'p11', name:'รวยไม่เลิก',   price:420,  tag:'ไม้มงคล',      popular:78,  stock:24,  note:'ชื่อมงคล ปังๆ'},
+    {id:'p12', name:'ยิมโนสี',      price:260,  tag:'แคคตัส',       popular:66,  stock:35,  note:'หัวสีสด'}
+  ];
+
+  // ---------- State ----------
+  const state = {
+    query:'',
+    cat:'',
+    sort:'popular',
+    cart: storage.get('cart', {}) // {id: qty}
+  };
+
+  // ---------- Elements ----------
+  const grid = $('#grid');
+  const q = $('#q');
+  const category = $('#category');
+  const sort = $('#sort');
+  const cartBtn = $('#openCart');
+  const cartCount = $('#cartCount');
+  const drawer = $('#drawer');
+  const backdrop = $('#backdrop');
+  const closeCart = $('#closeCart');
+  const cartList = $('#cartList');
+  const grandTotal = $('#grandTotal');
+  const payBtn = $('#payBtn');
+
+  // ---------- Render Products ----------
+  function productSVG(){
+    return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="200" height="150" rx="14" fill="#d1fae5"/>
+      <g fill="#065f46">
+        <circle cx="60" cy="90" r="34"/><rect x="55" y="90" width="10" height="18" rx="3"/>
+        <circle cx="140" cy="86" r="42"/><rect x="135" y="86" width="10" height="22" rx="3"/>
+      </g></svg>`;
+  }
+
+  function render(){
+    let list = PRODUCTS.filter(p=>{
+      const hit = (p.name + ' ' + p.tag + ' ' + p.note).toLowerCase();
+      return (!state.query || hit.includes(state.query)) &&
+             (!state.cat || p.tag===state.cat);
+    });
+    if(state.sort==='price-asc') list.sort((a,b)=>a.price-b.price);
+    else if(state.sort==='price-desc') list.sort((a,b)=>b.price-a.price);
+    else if(state.sort==='name-asc') list.sort((a,b)=>a.name.localeCompare(b.name,'th'));
+    else list.sort((a,b)=>b.popular-a.popular);
+
+    grid.innerHTML = list.map(p=>`
+      <article class="card" aria-label="${p.name}">
+        <div class="thumb" aria-hidden="true">${productSVG()}</div>
+        <div class="body">
+          <div class="title">${p.name}</div>
+          <div class="meta">${p.tag} · คงเหลือ ${p.stock}</div>
+          <div class="price">${THB.format(p.price)}</div>
+          <div class="qty-row">
+            <button aria-label="ลดจำนวน" onclick="changeQty('${p.id}',-1)">–</button>
+            <span id="qty-${p.id}">${state.cart[p.id]||0}</span>
+            <button aria-label="เพิ่มจำนวน" onclick="changeQty('${p.id}',1)">+</button>
+          </div>
+          <button class="add" onclick="addToCart('${p.id}')">เพิ่มลงตะกร้า</button>
+          <small class="meta">${p.note}</small>
+        </div>
+      </article>
+    `).join('') || `<div class="empty">ไม่พบสินค้าที่ตรงกับการค้นหา</div>`;
+    updateCartBadge();
+  }
+
+  // ---------- Cart ----------
+  function updateCartBadge(){
+    const total = Object.values(state.cart).reduce((a,b)=>a+b,0);
+    cartCount.textContent = total;
+  }
+  function addToCart(id){
+    const p = PRODUCTS.find(x=>x.id===id);
+    const nowQty = state.cart[id]||0;
+    if(nowQty+1>p.stock) return alert('สินค้าเกินจำนวนคงเหลือ');
+    state.cart[id]=nowQty+1;
+    storage.set('cart', state.cart);
+    $('#qty-'+id).textContent = state.cart[id];
+    updateCartBadge();
+    openDrawer();
+    renderCart();
+  }
+  function changeQty(id,delta){
+    const p = PRODUCTS.find(x=>x.id===id);
+    const current = state.cart[id]||0;
+    let next = Math.max(0, Math.min(p.stock, current+delta));
+    if(next===0) delete state.cart[id]; else state.cart[id]=next;
+    storage.set('cart', state.cart);
+    const span = $('#qty-'+id); if(span) span.textContent = state.cart[id]||0;
+    updateCartBadge();
+    renderCart();
+  }
+  function removeItem(id){
+    delete state.cart[id];
+    storage.set('cart', state.cart);
+    renderCart(); render();
+  }
+  function cartItems(){
+    return Object.entries(state.cart).map(([id,qty])=>{
+      const p = PRODUCTS.find(x=>x.id===id);
+      return {...p, qty, sub: p.price*qty};
+    });
+  }
+  function renderCart(){
+    const items = cartItems();
+    if(items.length===0){
+      cartList.innerHTML = `<div class="empty">ยังไม่มีสินค้าในตะกร้า</div>`;
+      grandTotal.textContent = THB.format(0);
+      return;
+    }
+    cartList.innerHTML = items.map(it=>`
+      <div class="cart-item">
+        <div class="cart-thumb" aria-hidden="true">${productSVG()}</div>
+        <div>
+          <div class="title">${it.name}</div>
+          <div class="meta">จำนวน
+            <span class="cart-actions">
+              <button class="remove" onclick="changeQty('${it.id}',-1)">–</button>
+              <strong>${it.qty}</strong>
+              <button class="remove" onclick="changeQty('${it.id}',1)">+</button>
+              <button class="remove" onclick="removeItem('${it.id}')">ลบ</button>
+            </span>
+          </div>
+        </div>
+        <div><strong>${THB.format(it.sub)}</strong></div>
+      </div>
+    `).join('');
+    const total = items.reduce((a,b)=>a+b.sub,0);
+    grandTotal.textContent = THB.format(total);
+  }
+
+  // ---------- Drawer ----------
+  function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+  function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+  backdrop.addEventListener('click', closeDrawer);
+  closeCart.addEventListener('click', closeDrawer);
+  $('#openCart').addEventListener('click', ()=>{ openDrawer(); renderCart(); });
+
+  // ---------- Filters Events ----------
+  q.addEventListener('input', debounce(e=>{ state.query = e.target.value.trim().toLowerCase(); render(); },200));
+  category.addEventListener('change', e=>{ state.cat = e.target.value; render(); });
+  sort.addEventListener('change', e=>{ state.sort = e.target.value; render(); });
+
+  // ---------- Checkout (demo) ----------
+  payBtn.addEventListener('click', ()=>{
+    const name = $('#name').value.trim();
+    const phone = $('#phone').value.trim();
+    const addr = $('#address').value.trim();
+    if(!name || !phone || !addr){ alert('กรุณากรอกข้อมูลให้ครบ'); return; }
+    if(cartItems().length===0){ alert('ยังไม่มีสินค้าในตะกร้า'); return; }
+    alert('สั่งซื้อสำเร็จ (ตัวอย่าง) ขอบคุณค่ะ 🌿');
+    state.cart = {};
+    storage.set('cart', state.cart);
+    render(); renderCart(); closeDrawer();
+  });
+
+  // ---------- Expose some functions for inline handlers ----------
+  window.addToCart = addToCart;
+  window.changeQty = changeQty;
+  window.removeItem = removeItem;
+
+  // ---------- Init ----------
+  $('#year').textContent = new Date().getFullYear();
+  render();
+  renderCart();
+  </script>
+</body>
+</html>
